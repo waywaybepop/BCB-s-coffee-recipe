@@ -5,21 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Because coffee brewers' recipe Calculator</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap'); /* Use 400 and 700 weights */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
 
         :root {
-            /* Color Palette (White Bold Text Version) */
-            --dark-gray-bg: #4d4d4d;     /* body 背景色 */
-            --light-gray-bg: #717171;    /* container 背景色 */
-            --text-color-light: #f5f5f5; /* 主要テキスト色 (ほぼ白) */
-            --border-color-light: rgba(255, 255, 255, 0.25); /* 境界線 (半透明の白) */
-            --input-bg: #606060;         /* 入力欄背景 (暗め) */
-            --input-border: #888888;     /* 入力欄ボーダー */
-            --input-focus-border: #bbbbbb; /* 入力欄フォーカスボーダー */
-            --button-bg: #333333;         /* ボタン背景 */
-            --button-text: #ffffff;       /* ボタンテキスト */
-            --button-hover-bg: #222222;   /* ボタンホバー */
-            /* エラー色はそのまま or 微調整 */
+            /* Color Palette */
+            --dark-gray-bg: #4d4d4d;
+            --light-gray-bg: #717171;
+            --text-color-light: #f5f5f5;
+            --border-color-light: rgba(255, 255, 255, 0.25);
+            --input-bg: #606060;
+            --input-border: #888888;
+            --input-focus-border: #bbbbbb;
+            --range-track-bg: #5a5a5a;
+            --range-thumb-bg: #bbbbbb;
+            --range-thumb-hover-bg: #dddddd;
+            /* Button colors (removed button, but keep for potential future use) */
+            --button-bg: #333333;
+            --button-text: #ffffff;
+            --button-hover-bg: #222222;
+            /* Error colors */
             --error-bg: #5c3e3e;
             --error-border: #7a5252;
             --error-text: #f5caca;
@@ -29,132 +33,172 @@
             font-family: 'Noto Sans JP', sans-serif;
             line-height: 1.7;
             margin: 0;
-            padding: 40px 0;
+            padding: 20px 0; /* Reduced padding for mobile */
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
             box-sizing: border-box;
             background-color: var(--dark-gray-bg);
-            color: var(--text-color-light); /* デフォルト文字色を白系に */
-            font-weight: 400; /* 基本の太さは通常 */
-            /* text-shadow は削除 */
+            color: var(--text-color-light);
+            font-weight: 400;
         }
 
         .container {
             max-width: 500px;
             width: 90%;
-            padding: 35px;
+            padding: 25px; /* Reduced padding */
             border-radius: 8px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             background-color: var(--light-gray-bg);
-            /* color は body から継承 */
         }
 
         h1 {
             text-align: center;
             color: var(--text-color-light);
-            font-weight: 700; /* 太字 */
-            font-size: 1.8em;
+            font-weight: 700;
+            font-size: 1.6em; /* Slightly smaller */
             margin-top: 0;
-            margin-bottom: 35px;
+            margin-bottom: 25px;
             letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--border-color-light); /* 境界線の色変更 */
-            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color-light);
+            padding-bottom: 15px;
         }
 
-        .input-group {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
+        .input-section {
+             margin-bottom: 25px;
         }
 
-        label {
-            flex-shrink: 0;
-            font-weight: 400; /* ラベルは通常の太さ */
+        .input-label {
+            display: block; /* Make label block */
+            font-weight: 400;
             color: var(--text-color-light);
             opacity: 0.9;
+            margin-bottom: 10px; /* Space between label and inputs */
+            text-align: center; /* Center label text */
+            font-size: 1.1em;
+        }
+         .input-label strong {
+             font-size: 1.3em; /* Make weight number larger */
+             font-weight: 700;
+             margin: 0 3px; /* Space around number */
+             color: #fff; /* Brighter white for number */
+         }
+
+        .input-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Space between number input and range */
         }
 
         input[type="number"] {
-            flex-grow: 1;
-            padding: 12px 15px;
+            width: 70px; /* Fixed width for number input */
+            padding: 10px; /* Adjust padding */
             border: 1px solid var(--input-border);
             border-radius: 4px;
             background-color: var(--input-bg);
-            font-size: 1em;
+            font-size: 1.1em; /* Larger font size */
             box-sizing: border-box;
-            text-align: right;
-            max-width: 120px;
-            color: var(--text-color-light); /* 文字色を白系に */
-            font-weight: 700; /* 入力文字も太字に */
+            text-align: center; /* Center text */
+            color: var(--text-color-light);
+            font-weight: 700;
+            -moz-appearance: textfield; /* Firefox */
         }
+         input[type="number"]::-webkit-outer-spin-button,
+         input[type="number"]::-webkit-inner-spin-button {
+             -webkit-appearance: none;
+             margin: 0;
+         }
          input[type="number"]:focus {
              outline: none;
-             border-color: var(--input-focus-border); /* フォーカス時のボーダー色調整 */
-             box-shadow: 0 0 0 2px rgba(245, 245, 245, 0.2); /* フォーカス時の影調整 */
-         }
-         input[type="number"]::placeholder {
-             color: #cccccc;
-             opacity: 0.6;
-             font-weight: 400; /* Placeholder は通常の太さ */
+             border-color: var(--input-focus-border);
+             box-shadow: 0 0 0 2px rgba(245, 245, 245, 0.2);
          }
 
-        button {
-            padding: 12px 25px;
-            background-color: var(--button-bg);
-            color: var(--button-text);
-            border: none;
-            border-radius: 4px;
+        input[type="range"] {
+            flex-grow: 1; /* Take remaining space */
+            height: 8px;
             cursor: pointer;
-            font-size: 1em;
-            font-weight: 700; /* ボタン文字も太字に */
-            transition: background-color 0.2s ease;
+            appearance: none;
+            background: var(--range-track-bg);
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity .2s;
+        }
+        input[type="range"]:hover {
+            opacity: 1;
         }
 
-        button:hover {
-            background-color: var(--button-hover-bg);
+        /* Range Thumb Styles (Cross-browser) */
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px; /* Thumb size */
+            height: 20px;
+            background: var(--range-thumb-bg);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background .2s;
         }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--range-thumb-bg);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none; /* Remove default border */
+             transition: background .2s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--range-thumb-hover-bg);
+        }
+        input[type="range"]::-moz-range-thumb:hover {
+            background: var(--range-thumb-hover-bg);
+        }
+         input[type="range"]:focus::-webkit-slider-thumb {
+             box-shadow: 0 0 0 3px rgba(245, 245, 245, 0.3);
+         }
+         input[type="range"]:focus::-moz-range-thumb {
+             box-shadow: 0 0 0 3px rgba(245, 245, 245, 0.3);
+         }
+
 
         #result {
-            margin-top: 30px;
-            padding: 25px;
-            border: 1px solid var(--border-color-light); /* 境界線色変更 */
+            margin-top: 25px;
+            padding: 20px; /* Reduced padding */
+            border: 1px solid var(--border-color-light);
             border-radius: 6px;
             background-color: rgba(0, 0, 0, 0.08);
         }
 
         #result h2 {
             margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 1.3em;
-            font-weight: 700; /* 太字 */
+            margin-bottom: 15px;
+            font-size: 1.2em; /* Slightly smaller */
+            font-weight: 700;
             color: var(--text-color-light);
             text-align: left;
-            border-bottom: 1px solid var(--border-color-light); /* 境界線色変更 */
-            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color-light);
+            padding-bottom: 10px;
         }
 
         #result p {
-            margin: 12px 0;
+            margin: 10px 0;
             font-size: 1em;
             color: var(--text-color-light);
-            font-weight: 700; /* レシピ概要も太字 */
+            font-weight: 700;
         }
-        /* strong タグはデフォルトで太字だが、明示的に font-weight: 700; を指定してもよい */
         #result strong {
-            font-weight: 700; /* 強調部分は確実に太字 */
+            font-weight: 700;
             display: inline-block;
-            min-width: 95px;
-            /* color は継承 */
+            min-width: 85px; /* Adjust width */
             opacity: 0.95;
         }
 
          .step {
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px dashed var(--border-color-light); /* 境界線色変更 */
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--border-color-light);
             font-size: 1em;
          }
          .step:last-child {
@@ -162,42 +206,39 @@
              margin-bottom: 0;
              padding-bottom: 0;
          }
-         /* ステップ詳細の <p> タグ全体を太字にする */
          .step p {
-             font-weight: 700; /* ステップ説明も太字 */
-             margin: 0; /* 必要なら調整 */
+             font-weight: 700;
+             margin: 0;
          }
-         /* ステップ内の strong タグ（時間部分）はさらに太くする必要はない */
          .step p strong {
-             font-weight: 700; /* 親から継承または明示 */
-             min-width: 110px;
-             display: inline-block; /* 縦揃えのため */
-             margin-right: 5px; /* 時間と内容の間に少しスペース */
+             font-weight: 700;
+             min-width: 90px; /* Adjust width */
+             display: inline-block;
+             margin-right: 5px;
          }
 
          .recipe-details {
-             margin-top: 25px;
-             padding-top: 15px;
-             border-top: 1px solid var(--border-color-light); /* 境界線色変更 */
+             margin-top: 20px;
+             padding-top: 10px;
+             border-top: 1px solid var(--border-color-light);
          }
           .recipe-details h3 {
               margin-top: 0;
-              margin-bottom: 15px;
+              margin-bottom: 10px;
               font-size: 1.1em;
-              font-weight: 700; /* 太字 */
+              font-weight: 700;
               color: var(--text-color-light);
           }
 
         .error {
             color: var(--error-text);
-            font-weight: 700; /* エラーメッセージも太字 */
+            font-weight: 700;
             text-align: center;
             padding: 10px;
             background-color: var(--error-bg);
             border: 1px solid var(--error-border);
             border-radius: 4px;
             margin-top: 10px;
-            /* text-shadow は削除 */
         }
     </style>
 </head>
@@ -206,10 +247,15 @@
     <div class="container">
         <h1>Because coffee brewers' recipe</h1>
 
-        <div class="input-group">
-            <label for="coffeeWeight">Coffee (g):</label>
-            <input type="number" id="coffeeWeight" name="coffeeWeight" value="15" min="1" step="0.1" placeholder="e.g. 15">
-            <button onclick="calculateRecipe()">Calculate</button>
+        <div class="input-section">
+            <label class="input-label" for="coffeeWeightNumber">
+                Coffee: <strong id="currentWeight">15</strong> g
+            </label>
+            <div class="input-controls">
+                <input type="number" id="coffeeWeightNumber" name="coffeeWeightNumber" value="15" min="5" max="40" step="0.5">
+                <input type="range" id="coffeeWeightRange" name="coffeeWeightRange" value="15" min="5" max="40" step="0.5">
+                <!-- Button is removed -->
+            </div>
         </div>
 
         <div id="result">
@@ -218,9 +264,15 @@
     </div>
 
     <script>
+        // --- DOM Elements ---
+        const numberInput = document.getElementById('coffeeWeightNumber');
+        const rangeInput = document.getElementById('coffeeWeightRange');
+        const currentWeightSpan = document.getElementById('currentWeight');
+        const resultDiv = document.getElementById('result');
+
         // --- Base Recipe ---
         const baseCoffeeGrams = 15;
-        const baseTotalWaterMl = 250;
+        // const baseTotalWaterMl = 250; // Not directly used in calculation display anymore
         const basePour1Ml = 60;
         const basePour2Ml = 130;
         const basePour3Ml = 60;
@@ -231,36 +283,40 @@
         const ratioPour2 = basePour2Ml / baseCoffeeGrams;
         const ratioPour3 = basePour3Ml / baseCoffeeGrams;
 
-        function calculateRecipe() {
-            const inputWeightElement = document.getElementById('coffeeWeight');
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '';
+        /**
+         * Calculates and displays the recipe based on coffee weight.
+         * @param {number} coffeeWeight - The weight of coffee beans in grams.
+         */
+        function calculateAndDisplayRecipe(coffeeWeight) {
+            resultDiv.innerHTML = ''; // Clear previous results
 
-            const coffeeWeight = parseFloat(inputWeightElement.value);
-
-            if (isNaN(coffeeWeight) || coffeeWeight <= 0) {
-                resultDiv.innerHTML = `<h2>Recipe</h2><p class="error">Please enter a valid coffee weight.</p>`;
+            // --- Input Validation (should be less likely with range, but good practice) ---
+            if (isNaN(coffeeWeight) || coffeeWeight < parseFloat(numberInput.min) || coffeeWeight > parseFloat(numberInput.max)) {
+                resultDiv.innerHTML = `<h2>Recipe</h2><p class="error">Invalid coffee weight.</p>`;
                 return;
             }
 
-            const calculatedPour1 = Math.round(coffeeWeight * ratioPour1);
-            const calculatedPour2 = Math.round(coffeeWeight * ratioPour2);
-            const calculatedPour3 = Math.round(coffeeWeight * ratioPour3);
-            const calculatedTotalWater = calculatedPour1 + calculatedPour2 + calculatedPour3;
+            // --- Recipe Calculation ---
+            // Round pour amounts to nearest whole number or 0.5 depending on preference
+             const calculatedPour1 = Math.round((coffeeWeight * ratioPour1) * 2) / 2; // Round to nearest 0.5
+             const calculatedPour2 = Math.round((coffeeWeight * ratioPour2) * 2) / 2; // Round to nearest 0.5
+             const calculatedPour3 = Math.round((coffeeWeight * ratioPour3) * 2) / 2; // Round to nearest 0.5
+             // Recalculate total water based on potentially rounded pours
+             const calculatedTotalWater = calculatedPour1 + calculatedPour2 + calculatedPour3;
 
+            // Cumulative amounts
             const cumulative1 = calculatedPour1;
             const cumulative2 = cumulative1 + calculatedPour2;
 
+            // --- Display Results ---
             let resultHTML = `<h2>Recipe (${coffeeWeight}g)</h2>`;
-            // レシピ概要部分 (p タグ自体に太字スタイルが適用される)
             resultHTML += `<p><strong>Coffee:</strong> ${coffeeWeight}g</p>`;
             resultHTML += `<p><strong>Water Temp:</strong> ${waterTemperature}°C</p>`;
-            resultHTML += `<p><strong>Total Water:</strong> ${calculatedTotalWater}ml</p>`;
+            resultHTML += `<p><strong>Total Water:</strong> ${calculatedTotalWater}ml</p>`; // Display calculated total
 
             resultHTML += `<div class="recipe-details">`;
             resultHTML += `<h3>Brew Steps</h3>`;
 
-            // ステップ部分 (p タグ自体に太字スタイルが適用される)
             resultHTML += `<div class="step">`;
             resultHTML += `<p><strong>0'00" - 0'10":</strong> Pour ${calculatedPour1}ml</p>`;
             resultHTML += `</div>`;
@@ -273,19 +329,44 @@
             resultHTML += `<p><strong>1'20" - 1'30":</strong> (Total ${calculatedTotalWater}ml)</p>`;
             resultHTML += `</div>`;
 
-            resultHTML += `</div>`;
+            resultHTML += `</div>`; // Close recipe-details
 
             resultDiv.innerHTML = resultHTML;
         }
 
+        /**
+         * Updates inputs and triggers recipe calculation.
+         * @param {Event} event - The input event object.
+         */
+        function handleInputChange(event) {
+            const newValue = event.target.value;
+             // Ensure value stays within min/max (mostly for number input edge cases)
+             const clampedValue = Math.max(parseFloat(numberInput.min), Math.min(parseFloat(numberInput.max), parseFloat(newValue)));
+
+            // Update both inputs and the display span
+            numberInput.value = clampedValue;
+            rangeInput.value = clampedValue;
+            currentWeightSpan.textContent = clampedValue;
+
+            // Calculate and display the new recipe
+            calculateAndDisplayRecipe(clampedValue);
+        }
+
+        // --- Event Listeners ---
+        numberInput.addEventListener('input', handleInputChange);
+        rangeInput.addEventListener('input', handleInputChange);
+
+        // --- Initial Calculation on Load ---
         window.onload = function() {
-             const initialWeight = document.getElementById('coffeeWeight').value;
-             if (initialWeight && !isNaN(initialWeight) && parseFloat(initialWeight) > 0) {
-                  calculateRecipe();
-              } else {
-                  document.getElementById('result').innerHTML = '<h2>Recipe</h2><p>Enter coffee weight and click Calculate.</p>';
-              }
+             const initialWeight = parseFloat(numberInput.value);
+             // Set initial span text
+             currentWeightSpan.textContent = initialWeight;
+             // Set initial range value in case it differs from number input's default
+             rangeInput.value = initialWeight;
+             // Perform initial calculation
+             calculateAndDisplayRecipe(initialWeight);
          };
+
     </script>
 
 </body>
