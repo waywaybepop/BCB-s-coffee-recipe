@@ -1,1 +1,275 @@
-git revert d17b9c00286596325f425e3ffaef5d7cd1d080a5
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Because coffee brewers' recipe Calculator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+        :root {
+            /* Color Palette */
+            --dark-gray-bg: #4d4d4d;
+            --light-gray-bg: #717171;
+            --text-color-light: #f5f5f5;
+            --border-color-light: rgba(255, 255, 255, 0.25);
+            /* Input colors */
+            --range-track-bg: #5a5a5a;
+            --range-thumb-bg: #bbbbbb;
+            --range-thumb-hover-bg: #dddddd;
+            /* Error colors */
+            --error-bg: #5c3e3e;
+            --error-border: #7a5252;
+            --error-text: #f5caca;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            padding: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+            background-color: var(--dark-gray-bg);
+            color: var(--text-color-light);
+            font-weight: 400;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 90%;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            background-color: var(--light-gray-bg);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color-light);
+            font-weight: 700;
+            font-size: 1.6em;
+            margin-top: 0;
+            margin-bottom: 25px;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color-light);
+            padding-bottom: 15px;
+        }
+
+        .input-section {
+             margin-bottom: 25px;
+        }
+
+        .input-label {
+            display: block;
+            font-weight: 400;
+            color: var(--text-color-light);
+            opacity: 0.9;
+            margin-bottom: 15px; /* Increased space */
+            text-align: center;
+            font-size: 1.1em;
+        }
+         .input-label strong {
+             font-size: 1.3em;
+             font-weight: 700;
+             margin: 0 3px;
+             color: #fff;
+             min-width: 3em; /* Ensure space for decimals like "12.5" */
+             display: inline-block; /* Allow min-width */
+             text-align: right; /* Align number to the right within its space */
+         }
+
+        /* Removed .input-controls CSS */
+
+        /* Keep range input style */
+        input[type="range"] {
+            width: 100%; /* Make slider take full width */
+            height: 8px;
+            cursor: pointer;
+            appearance: none;
+            background: var(--range-track-bg);
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity .2s;
+        }
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 22px; /* Slightly larger thumb for easier grab */
+            height: 22px;
+            background: var(--range-thumb-bg);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            background: var(--range-thumb-bg);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+             transition: background .2s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--range-thumb-hover-bg);
+        }
+        input[type="range"]::-moz-range-thumb:hover {
+            background: var(--range-thumb-hover-bg);
+        }
+         input[type="range"]:focus::-webkit-slider-thumb {
+             box-shadow: 0 0 0 3px rgba(245, 245, 245, 0.3);
+         }
+         input[type="range"]:focus::-moz-range-thumb {
+             box-shadow: 0 0 0 3px rgba(245, 245, 245, 0.3);
+         }
+
+        /* Result area styles remain the same */
+        #result {
+            margin-top: 25px;
+            padding: 20px;
+            border: 1px solid var(--border-color-light);
+            border-radius: 6px;
+            background-color: rgba(0, 0, 0, 0.08);
+        }
+        #result h2 {
+            margin-top: 0; margin-bottom: 15px; font-size: 1.2em; font-weight: 700;
+            color: var(--text-color-light); text-align: left;
+            border-bottom: 1px solid var(--border-color-light); padding-bottom: 10px;
+        }
+        #result p { margin: 10px 0; font-size: 1em; color: var(--text-color-light); font-weight: 700; }
+        #result strong { font-weight: 700; display: inline-block; min-width: 85px; opacity: 0.95; }
+        .step { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed var(--border-color-light); font-size: 1em; }
+        .step:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .step p { font-weight: 700; margin: 0; }
+        .step p strong { font-weight: 700; min-width: 90px; display: inline-block; margin-right: 5px; }
+        .recipe-details { margin-top: 20px; padding-top: 10px; border-top: 1px solid var(--border-color-light); }
+        .recipe-details h3 { margin-top: 0; margin-bottom: 10px; font-size: 1.1em; font-weight: 700; color: var(--text-color-light); }
+        .error { color: var(--error-text); font-weight: 700; text-align: center; padding: 10px; background-color: var(--error-bg); border: 1px solid var(--error-border); border-radius: 4px; margin-top: 10px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Because coffee brewers' recipe</h1>
+
+        <div class="input-section">
+            <label class="input-label" for="coffeeWeightRange"> <!-- Changed 'for' attribute -->
+                Coffee: <strong id="currentWeight">15.0</strong> g <!-- Initial value with decimal -->
+            </label>
+            <!-- Removed the surrounding div and number input -->
+            <input type="range" id="coffeeWeightRange" name="coffeeWeightRange" value="15" min="5" max="40" step="0.1"> <!-- Changed step to 0.1 -->
+        </div>
+
+        <div id="result">
+            <!-- 結果はJSで挿入される -->
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        // const numberInput = document.getElementById('coffeeWeightNumber'); // Removed
+        const rangeInput = document.getElementById('coffeeWeightRange');
+        const currentWeightSpan = document.getElementById('currentWeight');
+        const resultDiv = document.getElementById('result');
+
+        // --- Base Recipe ---
+        const baseCoffeeGrams = 15;
+        const basePour1Ml = 60;
+        const basePour2Ml = 130;
+        const basePour3Ml = 60;
+        const waterTemperature = 88;
+
+        // --- Ratios ---
+        const ratioPour1 = basePour1Ml / baseCoffeeGrams;
+        const ratioPour2 = basePour2Ml / baseCoffeeGrams;
+        const ratioPour3 = basePour3Ml / baseCoffeeGrams;
+
+        /**
+         * Calculates and displays the recipe based on coffee weight.
+         * @param {number} coffeeWeight - The weight of coffee beans in grams.
+         */
+        function calculateAndDisplayRecipe(coffeeWeight) {
+            resultDiv.innerHTML = '';
+
+            if (isNaN(coffeeWeight) || coffeeWeight < parseFloat(rangeInput.min) || coffeeWeight > parseFloat(rangeInput.max)) {
+                resultDiv.innerHTML = `<h2>Recipe</h2><p class="error">Invalid coffee weight.</p>`;
+                return;
+            }
+
+            // --- Recipe Calculation (Round water to nearest 0.5ml) ---
+            const calculatedPour1 = Math.round((coffeeWeight * ratioPour1) * 2) / 2;
+            const calculatedPour2 = Math.round((coffeeWeight * ratioPour2) * 2) / 2;
+            const calculatedPour3 = Math.round((coffeeWeight * ratioPour3) * 2) / 2;
+            const calculatedTotalWater = calculatedPour1 + calculatedPour2 + calculatedPour3;
+
+            // Cumulative amounts
+            const cumulative1 = calculatedPour1;
+            const cumulative2 = cumulative1 + calculatedPour2;
+
+            // --- Display Results ---
+            // Display coffee weight with 1 decimal place in the header
+            let resultHTML = `<h2>Recipe (${coffeeWeight.toFixed(1)}g)</h2>`;
+            // Display coffee weight with 1 decimal place in the details
+            resultHTML += `<p><strong>Coffee:</strong> ${coffeeWeight.toFixed(1)}g</p>`;
+            resultHTML += `<p><strong>Water Temp:</strong> ${waterTemperature}°C</p>`;
+            resultHTML += `<p><strong>Total Water:</strong> ${calculatedTotalWater}ml</p>`;
+
+            resultHTML += `<div class="recipe-details">`;
+            resultHTML += `<h3>Brew Steps</h3>`;
+
+            resultHTML += `<div class="step">`;
+            resultHTML += `<p><strong>0'00" - 0'10":</strong> Pour ${calculatedPour1}ml</p>`;
+            resultHTML += `</div>`;
+
+            resultHTML += `<div class="step">`;
+            resultHTML += `<p><strong>0'30" - 1'00":</strong> (Total ${cumulative2}ml)</p>`;
+            resultHTML += `</div>`;
+
+            resultHTML += `<div class="step">`;
+            resultHTML += `<p><strong>1'20" - 1'30":</strong> (Total ${calculatedTotalWater}ml)</p>`;
+            resultHTML += `</div>`;
+
+            resultHTML += `</div>`; // Close recipe-details
+
+            resultDiv.innerHTML = resultHTML;
+        }
+
+        /**
+         * Updates display span and triggers recipe calculation based on range input.
+         * @param {Event} event - The input event object from the range slider.
+         */
+        function handleRangeChange(event) {
+            const newValue = parseFloat(event.target.value);
+
+            // Update the display span with 1 decimal place
+            currentWeightSpan.textContent = newValue.toFixed(1);
+
+            // Calculate and display the new recipe
+            calculateAndDisplayRecipe(newValue);
+        }
+
+        // --- Event Listeners ---
+        // numberInput.addEventListener('input', handleInputChange); // Removed
+        rangeInput.addEventListener('input', handleRangeChange); // Use new handler
+
+        // --- Initial Calculation on Load ---
+        window.onload = function() {
+             const initialWeight = parseFloat(rangeInput.value);
+             // Set initial span text with 1 decimal place
+             currentWeightSpan.textContent = initialWeight.toFixed(1);
+             // Perform initial calculation
+             calculateAndDisplayRecipe(initialWeight);
+         };
+
+    </script>
+
+</body>
+</html>
